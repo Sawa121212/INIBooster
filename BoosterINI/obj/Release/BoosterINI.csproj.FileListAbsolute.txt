@@ -1,0 +1,7 @@
+C:\Users\u302062\source\repos\BoosterINI\BoosterINI\bin\Release\BoosterINI.exe.config
+C:\Users\u302062\source\repos\BoosterINI\BoosterINI\bin\Release\BoosterINI.exe
+C:\Users\u302062\source\repos\BoosterINI\BoosterINI\bin\Release\BoosterINI.pdb
+C:\Users\u302062\source\repos\BoosterINI\BoosterINI\obj\Release\BoosterINI.csprojAssemblyReference.cache
+C:\Users\u302062\source\repos\BoosterINI\BoosterINI\obj\Release\BoosterINI.csproj.CoreCompileInputs.cache
+C:\Users\u302062\source\repos\BoosterINI\BoosterINI\obj\Release\BoosterINI.exe
+C:\Users\u302062\source\repos\BoosterINI\BoosterINI\obj\Release\BoosterINI.pdb
