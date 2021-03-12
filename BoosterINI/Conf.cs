@@ -156,7 +156,9 @@ namespace BoosterINI
                                             {
                                                 lnClass = dataParts[0];
                                             }
-                                            lnClass = lnClass.Remove(lnClass.Length - 1);
+
+                                            string goodlnClass = lnClass.Remove(lnClass.Length - 1);
+                                            string lnInst = lnClass.Replace(goodlnClass, "");
 
                                             string daName = dataParts.Length > 3 ? dataParts[3] : "";
                                             goodRow = rowParts[0] + "=\"" +
@@ -164,8 +166,8 @@ namespace BoosterINI
                                                        " doName=" + dataParts[2] +
                                                        " fc=" + dataParts[1] +
                                                        " ldInst=" + paramParts[0] +
-                                                       " lnClass=" + lnClass +
-                                                       " lnInst=1" +
+                                                       " lnClass=" + goodlnClass +
+                                                       " lnInst=" + lnInst +
                                                        " prefix=" + prefix + "\"";
                                             output.WriteLine(goodRow);
                                             output.WriteLine("Comment" + dataNumber + "=");

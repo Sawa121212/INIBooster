@@ -5,3 +5,10 @@ C:\Users\u302062\source\repos\BoosterINI\BoosterINI\obj\Debug\BoosterINI.csprojA
 C:\Users\u302062\source\repos\BoosterINI\BoosterINI\obj\Debug\BoosterINI.csproj.CoreCompileInputs.cache
 C:\Users\u302062\source\repos\BoosterINI\BoosterINI\obj\Debug\BoosterINI.exe
 C:\Users\u302062\source\repos\BoosterINI\BoosterINI\obj\Debug\BoosterINI.pdb
+C:\Users\u302062\source\repos\INIBooster\BoosterINI\bin\Debug\BoosterINI.exe.config
+C:\Users\u302062\source\repos\INIBooster\BoosterINI\bin\Debug\BoosterINI.exe
+C:\Users\u302062\source\repos\INIBooster\BoosterINI\bin\Debug\BoosterINI.pdb
+C:\Users\u302062\source\repos\INIBooster\BoosterINI\obj\Debug\BoosterINI.csprojAssemblyReference.cache
+C:\Users\u302062\source\repos\INIBooster\BoosterINI\obj\Debug\BoosterINI.csproj.CoreCompileInputs.cache
+C:\Users\u302062\source\repos\INIBooster\BoosterINI\obj\Debug\BoosterINI.exe
+C:\Users\u302062\source\repos\INIBooster\BoosterINI\obj\Debug\BoosterINI.pdb
