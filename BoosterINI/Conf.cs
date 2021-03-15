@@ -17,11 +17,10 @@ namespace BoosterINI
                 output.WriteLine("[Project]\nName=Project\n");
 
                 int counter = 0;
-                foreach (string file in FilesList)
+                foreach (string fileName in FilesList)
                 {
-                    var dirName = file.Replace(".ini", "");
                     output.WriteLine("[Device" + counter++ + "]");
-                    output.WriteLine("Name =" + dirName + "\n");
+                    output.WriteLine("Name =" + fileName + "\n");
                 }
 
                 output.WriteLine("[Count]\nvalue=" + FilesList.Length);
@@ -51,13 +50,13 @@ namespace BoosterINI
             {
                 foreach (string file in FilesList)
                 {
-                    var dirName = file.Replace(".ini", "");
+                    var dirName = file;
                     StreamWriter output = new StreamWriter(dirName + "\\" + filenameConf);
 
                     output.WriteLine("[Count]\nvalue=0\n");
                     int rowAddCount = 0;
                     bool addRowMode = false;
-                    using (var sr = new StreamReader(file))
+                    using (var sr = new StreamReader(file + ".ini"))
                     {
                         string line;
 
@@ -230,7 +229,7 @@ namespace BoosterINI
             {
                 foreach (string file in FilesList)
                 {
-                    File.Delete(file);
+                    File.Delete(file + ".ini");
                 }
                 Message.ExcellentMessage("Config файлы созданы");
             }

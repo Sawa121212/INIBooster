@@ -9,16 +9,9 @@ namespace BoosterINI
         {
             try
             {
-                Files = new String[FilesList.Length];
-                int counter = 0;
                 foreach (string file in FilesList)
                 {
-                    Uri uri = new Uri(file);
-                    string filename = Path.GetFileName(uri.LocalPath);
-                    Files[counter++] = filename;
-                    filename = filename.Replace(".ini", "");
-
-                    DirectoryInfo dirInfo = new DirectoryInfo(filename);
+                    DirectoryInfo dirInfo = new DirectoryInfo(file);
                     if (!dirInfo.Exists)
                     {
                         dirInfo.Create();

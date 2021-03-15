@@ -13,7 +13,6 @@ namespace BoosterINI
             var d = new Files();
             if (d.FileChecker())
             {
-
                 Conf.ClearINIFiles(Files);
 
                 // создаем Главный Config файл
@@ -22,12 +21,12 @@ namespace BoosterINI
                 Message.ExcellentMessage("=================");
                 Message.ExcellentMessage("=== ВЫПОЛНЕНО ===");
                 Message.ExcellentMessage("=================");
-
             }
             else
             {
                 Message.ErrorMessage("Ошибка в работе");
             }
+            Console.WriteLine("version 1.1");
             Console.ReadKey();
         }
     }
