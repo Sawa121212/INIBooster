@@ -48,6 +48,7 @@ namespace BoosterINI
 
             try
             {
+                int counter = 0;
                 foreach (string file in FilesList)
                 {
                     var dirName = file;
@@ -56,159 +57,96 @@ namespace BoosterINI
                     output.WriteLine("[Count]\nvalue=0\n");
                     int rowAddCount = 0;
                     bool addRowMode = false;
-                    using (var sr = new StreamReader(file + ".ini"))
+
+                    // Address
+                    foreach (var str in Address[counter])
                     {
-                        string line;
+                        output.WriteLine(str);
+                    }
+                    output.Write("\n");
 
-                        while ((line = sr.ReadLine()) != null)
+                    foreach (var str in ControlModels[counter])
+                    {
+                        output.WriteLine(str);
+                    }
+                    output.Write("\n");
+
+                    foreach (var line in Datasets[counter])
+                    {
+                        string goodRow = "";
+                        string[] rowParts = line.Split('=');
+
+                        if (rowParts.Length > 1)
                         {
-                            if (rowAddCount > 0)
+                            if (rowParts[0].Length > 4)
                             {
-                                output.WriteLine(line);
-                                rowAddCount--;
-                                continue;
-                            }
+                                string dataNumber = rowParts[0].Remove(0, 4);
+                                string data = rowParts[0].Replace(dataNumber, "");
 
-                            if (line == "[Ethernet1]")
-                            {
-                                output.WriteLine("[Address]");
-                                rowAddCount = 3;
-                                continue;
-                            }
-
-                            if (line == "[ControlModels]")
-                            {
-                                output.WriteLine("\n" + line);
-                                rowAddCount = 3;
-                                continue;
-                            }
-
-                            if (line == "[DataSetCount]")
-                            {
-                                output.WriteLine("\n" + line);
-                                DatasetSaveMode = true;
-                                addRowMode = true;
-                                continue;
-                            }
-
-
-                            if (line == "[GCBcount]")
-                            {
-                                output.WriteLine(line);
-                                DatasetSaveMode = false;
-                                rowAddCount = 1;
-                                continue;
-                            }
-
-                            if (line == "[RCBcount]")
-                            {
-                                output.WriteLine("[TRs]\nvalue = 8\n");
-                                output.WriteLine("[TCTR0]\nscaleFactor = 1000\noffset = 0\n");
-                                output.WriteLine("[TCTR1]\nscaleFactor = 1000\noffset = 0\n");
-                                output.WriteLine("[TCTR2]\nscaleFactor = 1000\noffset = 0\n");
-                                output.WriteLine("[TCTR3]\nscaleFactor = 1000\noffset = 0\n");
-                                output.WriteLine("[TVTR0]\nscaleFactor = 100\noffset = 0\n");
-                                output.WriteLine("[TVTR1]\nscaleFactor = 100\noffset = 0\n");
-                                output.WriteLine("[TVTR2]\nscaleFactor = 100\noffset = 0\n");
-                                output.WriteLine("[TVTR3]\nscaleFactor = 100\noffset = 0\n");
-
-                                RCBSaveMode = true;
-                                addRowMode = false;
-                                continue;
-                            }
-
-                            if (line == "[SVCBcount]")
-                            {
-                                addRowMode = true;
-
-                                output.WriteLine(line);
-                                continue;
-                            }
-
-                            if (DatasetSaveMode)
-                            {
-                                string goodRow = "";
-                                string[] rowParts = line.Split('=');
-
-                                if (rowParts.Length > 1)
+                                if (data == "Data")
                                 {
-                                    if (rowParts[0].Length > 4)
+                                    rowParts[1] = rowParts[1].Replace(".", "$");
+                                    string[] paramParts = rowParts[1].Split('/');
+                                    string[] dataParts = paramParts[1].Split('$');
+
+                                    string prefix = "";
+                                    string lnClass;
+                                    if (dataParts[0].Length > 5)
                                     {
-                                        string dataNumber = rowParts[0].Remove(0, 4);
-                                        string data = rowParts[0].Replace(dataNumber, "");
-
-                                        if (data == "Data")
-                                        {
-                                            //Data34="daName=stVal doName=Ind72 fc=ST ldInst=CTRL lnClass=GGIO lnInst=1 prefix=Out"
-                                            //Data9=CTRL/OutGGIO1$ST$Ind8$stVal
-                                            string[] paramParts = rowParts[1].Split('/');
-                                            string[] dataParts = paramParts[1].Split('$');
-
-                                            string prefix = "";
-                                            string lnClass;
-                                            if (dataParts[0].Length > 5)
-                                            {
-                                                prefix = dataParts[0].Remove(dataParts[0].Length - 5);
-                                                lnClass = dataParts[0].Replace(prefix, "");
-                                            }
-                                            else
-                                            {
-                                                lnClass = dataParts[0];
-                                            }
-
-                                            string goodlnClass = lnClass.Remove(lnClass.Length - 1);
-                                            string lnInst = lnClass.Replace(goodlnClass, "");
-
-                                            string daName = dataParts.Length > 3 ? dataParts[3] : "";
-                                            goodRow = rowParts[0] + "=\"" +
-                                                       "daName=" + daName +
-                                                       " doName=" + dataParts[2] +
-                                                       " fc=" + dataParts[1] +
-                                                       " ldInst=" + paramParts[0] +
-                                                       " lnClass=" + goodlnClass +
-                                                       " lnInst=" + lnInst +
-                                                       " prefix=" + prefix + "\"";
-                                            output.WriteLine(goodRow);
-                                            output.WriteLine("Comment" + dataNumber + "=");
-                                        }
-                                        else { output.WriteLine(line); }
+                                        prefix = dataParts[0].Remove(dataParts[0].Length - 5);
+                                        lnClass = dataParts[0].Replace(prefix, "");
                                     }
-                                    else { output.WriteLine(line); }
+                                    else
+                                    {
+                                        lnClass = dataParts[0];
+                                    }
+
+                                    string goodlnClass = lnClass.Remove(lnClass.Length - 1);
+                                    string lnInst = lnClass.Replace(goodlnClass, "");
+
+                                    string daName = dataParts.Length > 3 ? dataParts[3] : "";
+                                    daName = dataParts.Length > 4 ? dataParts[3] + "$" + dataParts[4] : daName;
+                                    goodRow = rowParts[0] + "=\"" +
+                                               "daName=" + daName +
+                                               " doName=" + dataParts[2] +
+                                               " fc=" + dataParts[1] +
+                                               " ldInst=" + paramParts[0] +
+                                               " lnClass=" + goodlnClass +
+                                               " lnInst=" + lnInst +
+                                               " prefix=" + prefix + "\"";
+                                    output.WriteLine(goodRow);
+                                    output.WriteLine("Comment" + dataNumber + "=");
                                 }
                                 else { output.WriteLine(line); }
-                                continue;
                             }
-
-                            if (RCBSaveMode)
-                            {
-                                if (line != "[GooseSubscriberCount]")
-                                {
-                                    RCB.Add(line);
-                                }
-                                else
-                                {
-                                    addRowMode = false;
-                                    RCBSaveMode = false;
-                                }
-
-                                continue;
-                            }
-
-                            // если режим добавления строк
-                            if (addRowMode)
-                            {
-                                output.WriteLine(line);
-                            }
-
+                            else { output.WriteLine(line); }
                         }
-
-                        output.WriteLine("[RCBcount]");
-                        foreach (var rcbRow in RCB)
-                        {
-                            output.WriteLine(rcbRow);
-                        }
+                        else { output.WriteLine(line); }
                     }
 
+                    foreach (var str in GCBs[counter])
+                    {
+                        output.WriteLine(str);
+                    }
+
+                    // TRs
+                    foreach (var str in TRs)
+                    {
+                        output.WriteLine(str);
+                    }
+                    output.Write("\n");
+
+                    foreach (var str in SVCBs[counter])
+                    {
+                        output.WriteLine(str);
+                    }
+
+                    foreach (var str in RCBs[counter])
+                    {
+                        output.WriteLine(str);
+                    }
+
+                    counter++;
                     output.Close();
                 }
 
@@ -231,7 +169,7 @@ namespace BoosterINI
                 {
                     File.Delete(file + ".ini");
                 }
-                Message.ExcellentMessage("Config файлы созданы");
+                Message.ExcellentMessage("Очистка временных файлов завершена");
             }
             catch (Exception e)
             {
