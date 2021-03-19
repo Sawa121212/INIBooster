@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace BoosterINI
@@ -11,10 +12,7 @@ namespace BoosterINI
             try
             {
                 CIDFiles = Directory.GetFiles(Environment.CurrentDirectory, "*.cid");
-                // WriteFileList(CIDFiles);
-
                 INIFiles = Directory.GetFiles(Environment.CurrentDirectory, "*.ini");
-                //WriteFileList(INIFiles);
 
                 // [cid][ini] - проверка наличия файлов
                 int[,] fileIsFinded = CIDFiles.Length > INIFiles.Length ? new int[CIDFiles.Length, 2] : new int[INIFiles.Length, 2];
@@ -38,6 +36,7 @@ namespace BoosterINI
                     Files[counter++] = fileName;
                 }
 
+                Console.WriteLine("\t.-----+------------------+---------------+---------------.");
                 Console.WriteLine("\t|{0,2}   |{1,15}   |{2, 15}|{3,15}|", " №", " IED", " cid file", "ini file");
                 Console.WriteLine("\t|-----+------------------+---------------+---------------|");
 
@@ -135,9 +134,33 @@ namespace BoosterINI
         {
             try
             {
+                //инициализация
+                IEDName = new List<List<string>>();
+                Address = new List<List<string>>();
+                ControlModels = new List<List<string>>();
+                Datasets = new List<List<string>>();
+                GCBs = new List<List<string>>();
+                SVCBs = new List<List<string>>();
+                RCBs = new List<List<string>>();
+                GooseSubscribers = new List<List<string>>();
+
+                //добавление новой строки
+                foreach (var file in FilesList)
+                {
+                    IEDName.Add(new List<string>());
+                    Address.Add(new List<string>());
+                    ControlModels.Add(new List<string>());
+                    Datasets.Add(new List<string>());
+                    GCBs.Add(new List<string>());
+                    SVCBs.Add(new List<string>());
+                    RCBs.Add(new List<string>());
+                    GooseSubscribers.Add(new List<string>());
+                }
+
                 string[] addressSettings = { "", "", "" };
                 int addressSettingsCount = -1;
 
+                int counter = 0;
                 foreach (string file in FilesList)
                 {
                     // создаем временный файл, вставляем строки из ini файла
@@ -145,52 +168,147 @@ namespace BoosterINI
                     var dirName = file;
 
                     // читаем построчно
-                    using (var sr = new StreamReader(file + ".ini"))
-                    using (var sw = new StreamWriter(tempFile))
+                    using (var row = new StreamReader(file + ".ini"))
                     {
                         string line;
-
-                        while ((line = sr.ReadLine()) != null)
+                        while ((line = row.ReadLine()) != null)
                         {
-                            if (addressSettingsCount >= 0)
-                            {
-                                addressSettings[addressSettingsCount] = line;
-                                addressSettingsCount--;
+                            if (line == "") { continue; }
 
-                                if (addressSettingsCount < 0)
+                            if (line == "[IEDNAME]")
+                            {
+                                IEDName[counter].Add(line);
+                                IEDName[counter].Add(row.ReadLine());
+                            }
+                            if (line == "[Ethernet1]")
+                            {
+                                Address[counter].Add("[Address]");
+                                Address[counter].Add(row.ReadLine());
+                                Address[counter].Add(row.ReadLine());
+                                Address[counter].Add(row.ReadLine());
+                            }
+                            if (line == "[ControlModels]")
+                            {
+                                ControlModels[counter].Add(line);
+                                ControlModels[counter].Add(row.ReadLine());
+                                ControlModels[counter].Add(row.ReadLine());
+                                ControlModels[counter].Add(row.ReadLine());
+                            }
+                            if (line == "[DataSetCount]")
+                            {
+                                Datasets[counter].Add(line);
+                                while ((line = row.ReadLine()) != "[GCBcount]")
                                 {
-                                    sw.WriteLine(line);
-                                    sw.WriteLine("\n[Ethernet1]");
-                                    for (int i = 2; i >= 0; i--)
-                                    {
-                                        sw.WriteLine(addressSettings[i]);
-                                    }
-                                    continue;
+                                    Datasets[counter].Add(line);
                                 }
                             }
-
-                            if (line == "[Address]")
+                            if (line == "[GCBcount]")
                             {
-                                addressSettingsCount = 2;
+                                GCBs[counter].Add(line);
+                                while ((line = row.ReadLine()) != "[RCBcount]")
+                                {
+                                    GCBs[counter].Add(line);
+                                }
                             }
-
-                            if (line == "OSI-TSEL=0001" ||
-                                line == "OSI-PSEL=00000001" ||
-                                line == "OSI-SSEL=0001")
+                            if (line == "[RCBcount]")
                             {
-                                continue;
+                                RCBs[counter].Add(line);
+                                while ((line = row.ReadLine()) != "[GooseSubscriberCount]")
+                                {
+                                    RCBs[counter].Add(line);
+                                }
                             }
+                            if (line == "[GooseSubscriberCount]")
+                            {
+                                GooseSubscribers[counter].Add(line);
+                                int i = 0;
+                                while ((line = row.ReadLine()) != "[SVCBcount]")
+                                {
+                                    GooseSubscribers[counter].Add(line);
+                                }
+                            }
+                            if (line == "[SVCBcount]")
+                            {
+                                SVCBs[counter].Add(line);
+                                int i = 0;
+                                while ((line = row.ReadLine()) != null)
+                                {
+                                    SVCBs[counter].Add(line);
+                                }
+                            }
+                        }
 
-                            sw.WriteLine(line);
+                    }
+
+                    using (var sw = new StreamWriter(tempFile))
+                    {
+
+                        foreach (var str in IEDName[counter])
+                        {
+                            sw.WriteLine(str);
+                        }
+                        sw.Write("\n");
+
+                        // Address
+                        foreach (var str in Address[counter])
+                        {
+                            sw.WriteLine(str);
+                        }
+                        sw.Write("\n");
+
+                        // Ethernet1
+                        sw.WriteLine("[Ethernet1]");
+                        for (int i = 1; i < Address[counter].Count; i++)
+                        {
+                            sw.WriteLine(Address[counter][i]);
+                        }
+                        sw.Write("\n");
+
+                        foreach (var str in ControlModels[counter])
+                        {
+                            sw.WriteLine(str);
+                        }
+                        sw.Write("\n");
+
+                        foreach (var str in Datasets[counter])
+                        {
+                            sw.WriteLine(str);
+                        }
+
+                        foreach (var str in GCBs[counter])
+                        {
+                            sw.WriteLine(str);
+                        }
+
+                        // TRs
+                        foreach (var str in TRs)
+                        {
+                            sw.WriteLine(str);
+                        }
+                        sw.Write("\n");
+
+                        foreach (var str in SVCBs[counter])
+                        {
+                            sw.WriteLine(str);
+                        }
+
+                        foreach (var str in RCBs[counter])
+                        {
+                            sw.WriteLine(str);
+                        }
+
+                        foreach (var str in GooseSubscribers[counter])
+                        {
+                            sw.WriteLine(str);
                         }
                     }
+                    counter++;
 
                     // перемещаем заполненный временный файл
                     File.Move(tempFile, Environment.CurrentDirectory + "\\" + dirName + "\\" + "settings.ini");
-
-                    // создаем Config файлы из ini файлов
-
                 }
+
+                // создаем Config файлы из ini файлов
                 if (Conf.CreateConfig(FilesList)) { }
                 else { return false; }
 
