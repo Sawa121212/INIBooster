@@ -10,6 +10,9 @@ namespace BoosterINI
         public static string[] CIDFiles;
         public static string[] Files;
 
+        public static bool smpRateEdit;
+        public static int smpRateValue;
+
         // // // 
         // Mod (режим записи)
         public static List<List<string>> IEDName;
@@ -21,11 +24,11 @@ namespace BoosterINI
         public static List<List<string>> RCBs;
         public static List<List<string>> GooseSubscribers;
 
-        public static string[] TRs = { "[TRs]", "value=8", "[TCTR0]", "scaleFactor=1000", "offset=0", "[TCTR1]", "scaleFactor=1000", "offset=0", "[TCTR2]", "scaleFactor=1000", "offset=0", "[TCTR3]", "scaleFactor=1000", "offset=0", "[TVTR0]", "scaleFactor=100", "offset=0", "[TVTR1]", "scaleFactor=100", "offset=0", "[TVTR2]", "scaleFactor=100", "offset=0", "[TVTR3]", "scaleFactor=100", "offset=0" };
+        public static string[] TRs = {"[TRs]", "value=8", "[TCTR0]", "scaleFactor=1000", "offset=0", "[TCTR1]", "scaleFactor=1000", "offset=0", "[TCTR2]", "scaleFactor=1000", "offset=0", "[TCTR3]", "scaleFactor=1000", "offset=0", "[TVTR0]", "scaleFactor=100", "offset=0", "[TVTR1]", "scaleFactor=100", "offset=0", "[TVTR2]", "scaleFactor=100", "offset=0", "[TVTR3]", "scaleFactor=100", "offset=0"};
 
         static void Main(string[] args)
         {
-            Console.WriteLine("version 1.2r");
+            Console.WriteLine("version 1.3r (smpRate)");
             var d = new Files();
             if (d.FileChecker())
             {
@@ -42,6 +45,7 @@ namespace BoosterINI
             {
                 Message.ErrorMessage("Ошибка в работе");
             }
+
             Console.Write("Нажмите на любую клавишу для завершения...");
             Console.ReadKey();
         }

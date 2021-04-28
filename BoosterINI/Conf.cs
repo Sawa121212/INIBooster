@@ -63,12 +63,14 @@ namespace BoosterINI
                     {
                         output.WriteLine(str);
                     }
+
                     output.Write("\n");
 
                     foreach (var str in ControlModels[counter])
                     {
                         output.WriteLine(str);
                     }
+
                     output.Write("\n");
 
                     foreach (var line in Datasets[counter])
@@ -107,21 +109,30 @@ namespace BoosterINI
                                     string daName = dataParts.Length > 3 ? dataParts[3] : "";
                                     daName = dataParts.Length > 4 ? dataParts[3] + "$" + dataParts[4] : daName;
                                     goodRow = rowParts[0] + "=\"" +
-                                               "daName=" + daName +
-                                               " doName=" + dataParts[2] +
-                                               " fc=" + dataParts[1] +
-                                               " ldInst=" + paramParts[0] +
-                                               " lnClass=" + goodlnClass +
-                                               " lnInst=" + lnInst +
-                                               " prefix=" + prefix + "\"";
+                                        "daName=" + daName +
+                                        " doName=" + dataParts[2] +
+                                        " fc=" + dataParts[1] +
+                                        " ldInst=" + paramParts[0] +
+                                        " lnClass=" + goodlnClass +
+                                        " lnInst=" + lnInst +
+                                        " prefix=" + prefix + "\"";
                                     output.WriteLine(goodRow);
                                     output.WriteLine("Comment" + dataNumber + "=");
                                 }
-                                else { output.WriteLine(line); }
+                                else
+                                {
+                                    output.WriteLine(line);
+                                }
                             }
-                            else { output.WriteLine(line); }
+                            else
+                            {
+                                output.WriteLine(line);
+                            }
                         }
-                        else { output.WriteLine(line); }
+                        else
+                        {
+                            output.WriteLine(line);
+                        }
                     }
 
                     foreach (var str in GCBs[counter])
@@ -134,11 +145,54 @@ namespace BoosterINI
                     {
                         output.WriteLine(str);
                     }
+
                     output.Write("\n");
 
-                    foreach (var str in SVCBs[counter])
+
+                    // SVCBs
+                    if (!smpRateEdit)
                     {
-                        output.WriteLine(str);
+                        foreach (var str in SVCBs[counter])
+                        {
+                            output.WriteLine(str);
+                        }
+                    }
+                    else
+                    {
+                        var index = 0;
+                        var row = SVCBs[counter][index];
+
+                        if (row == "[SVCBcount]")
+                        {
+                            output.WriteLine(row);
+                            row = SVCBs[counter][++index];
+                            var strValue = row.Replace("value=", "");
+                            var value = int.Parse(strValue);
+                            if (value > 0)
+                            {
+                                output.WriteLine(row);
+
+                                // меняем appID 
+                                for (int i = 3; i < SVCBs[counter].Count; i++)
+                                {
+                                    row = SVCBs[counter][i];
+
+                                    // smpRate
+                                    if (row.Contains("smpRate="))
+                                    {
+                                        output.WriteLine("smpRate=" + smpRateValue);
+                                        Message.ExcellentMessage("Значения smpRate поменялись у " + file + " на " + smpRateValue);
+                                        continue;
+                                    }
+
+                                    output.WriteLine(row);
+                                }
+                            }
+                            else
+                            {
+                                output.WriteLine(row);
+                            }
+                        }
                     }
 
                     foreach (var str in RCBs[counter])
@@ -158,6 +212,7 @@ namespace BoosterINI
                 Message.ErrorMessage(e.Message);
                 return false;
             }
+
             return true;
         }
 
@@ -169,6 +224,7 @@ namespace BoosterINI
                 {
                     File.Delete(file + ".ini");
                 }
+
                 Message.ExcellentMessage("Очистка временных файлов завершена");
             }
             catch (Exception e)

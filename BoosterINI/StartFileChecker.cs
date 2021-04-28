@@ -54,8 +54,10 @@ namespace BoosterINI
                             Message.ErrorMessageAdd(" not available |");
                         }
                     }
+
                     Console.Write("\n");
                 }
+
                 Console.WriteLine("\t'-----+------------------+---------------+---------------'");
 
 
@@ -75,15 +77,44 @@ namespace BoosterINI
                 Message.ErrorMessage(e.Message);
             }
 
+            try
+            {
+                Console.Write("Меняем smpRate у всех устройств? [ДА - y, НЕТ - любой символ]: ");
+                var userAnswer = Convert.ToString(Console.ReadLine());
+                if (userAnswer == "y")
+                {
+                    smpRateEdit = true;
+                    Console.Write("Новое значение smpRate = ");
+                    smpRateValue = Convert.ToInt32(Console.ReadLine());
+                }
+                else
+                {
+                    smpRateEdit = false;
+                }
+
+                Console.Write("\n");
+            }
+            catch (Exception e)
+            {
+                Message.ErrorMessage("Ошибка при чтении вашего ответа");
+                Message.ErrorMessage(e.Message);
+            }
+
             // создаем папки по имени файла
             if (_dir.CreateDirectory(Files))
             {
                 if (MoveFiles(Files))
                 {
                 }
-                else { return false; }
+                else
+                {
+                    return false;
+                }
             }
-            else { return false; }
+            else
+            {
+                return false;
+            }
 
             return true;
         }
@@ -122,6 +153,7 @@ namespace BoosterINI
                 Message.ErrorMessage(e.Message.ToString());
                 return false;
             }
+
             return true;
         }
 
@@ -157,7 +189,7 @@ namespace BoosterINI
                     GooseSubscribers.Add(new List<string>());
                 }
 
-                string[] addressSettings = { "", "", "" };
+                string[] addressSettings = {"", "", ""};
                 int addressSettingsCount = -1;
 
                 int counter = 0;
@@ -173,13 +205,17 @@ namespace BoosterINI
                         string line;
                         while ((line = row.ReadLine()) != null)
                         {
-                            if (line == "") { continue; }
+                            if (line == "")
+                            {
+                                continue;
+                            }
 
                             if (line == "[IEDNAME]")
                             {
                                 IEDName[counter].Add(line);
                                 IEDName[counter].Add(row.ReadLine());
                             }
+
                             if (line == "[Ethernet1]")
                             {
                                 Address[counter].Add("[Address]");
@@ -187,6 +223,7 @@ namespace BoosterINI
                                 Address[counter].Add(row.ReadLine());
                                 Address[counter].Add(row.ReadLine());
                             }
+
                             if (line == "[ControlModels]")
                             {
                                 ControlModels[counter].Add(line);
@@ -194,6 +231,7 @@ namespace BoosterINI
                                 ControlModels[counter].Add(row.ReadLine());
                                 ControlModels[counter].Add(row.ReadLine());
                             }
+
                             if (line == "[DataSetCount]")
                             {
                                 Datasets[counter].Add(line);
@@ -202,6 +240,7 @@ namespace BoosterINI
                                     Datasets[counter].Add(line);
                                 }
                             }
+
                             if (line == "[GCBcount]")
                             {
                                 GCBs[counter].Add(line);
@@ -210,6 +249,7 @@ namespace BoosterINI
                                     GCBs[counter].Add(line);
                                 }
                             }
+
                             if (line == "[RCBcount]")
                             {
                                 RCBs[counter].Add(line);
@@ -218,6 +258,7 @@ namespace BoosterINI
                                     RCBs[counter].Add(line);
                                 }
                             }
+
                             if (line == "[GooseSubscriberCount]")
                             {
                                 GooseSubscribers[counter].Add(line);
@@ -227,6 +268,7 @@ namespace BoosterINI
                                     GooseSubscribers[counter].Add(line);
                                 }
                             }
+
                             if (line == "[SVCBcount]")
                             {
                                 SVCBs[counter].Add(line);
@@ -237,16 +279,15 @@ namespace BoosterINI
                                 }
                             }
                         }
-
                     }
 
                     using (var sw = new StreamWriter(tempFile))
                     {
-
                         foreach (var str in IEDName[counter])
                         {
                             sw.WriteLine(str);
                         }
+
                         sw.Write("\n");
 
                         // Address
@@ -254,6 +295,7 @@ namespace BoosterINI
                         {
                             sw.WriteLine(str);
                         }
+
                         sw.Write("\n");
 
                         // Ethernet1
@@ -262,12 +304,14 @@ namespace BoosterINI
                         {
                             sw.WriteLine(Address[counter][i]);
                         }
+
                         sw.Write("\n");
 
                         foreach (var str in ControlModels[counter])
                         {
                             sw.WriteLine(str);
                         }
+
                         sw.Write("\n");
 
                         foreach (var str in Datasets[counter])
@@ -285,6 +329,7 @@ namespace BoosterINI
                         {
                             sw.WriteLine(str);
                         }
+
                         sw.Write("\n");
 
                         foreach (var str in SVCBs[counter])
@@ -302,6 +347,7 @@ namespace BoosterINI
                             sw.WriteLine(str);
                         }
                     }
+
                     counter++;
 
                     // перемещаем заполненный временный файл
@@ -309,8 +355,13 @@ namespace BoosterINI
                 }
 
                 // создаем Config файлы из ini файлов
-                if (Conf.CreateConfig(FilesList)) { }
-                else { return false; }
+                if (Conf.CreateConfig(FilesList))
+                {
+                }
+                else
+                {
+                    return false;
+                }
 
                 Message.ExcellentMessage("Файлы ini созданы и переименованы в settings.ini");
             }
@@ -320,6 +371,7 @@ namespace BoosterINI
                 Message.ErrorMessage(e.Message);
                 return false;
             }
+
             return true;
         }
     }
