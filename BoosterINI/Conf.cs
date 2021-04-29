@@ -159,42 +159,21 @@ namespace BoosterINI
                     }
                     else
                     {
-                        var index = 0;
-                        var row = SVCBs[counter][index];
-
-                        if (row == "[SVCBcount]")
+                        foreach (var str in SVCBs[counter])
                         {
-                            output.WriteLine(row);
-                            row = SVCBs[counter][++index];
-                            var strValue = row.Replace("value=", "");
-                            var value = int.Parse(strValue);
-                            if (value > 0)
+                            if (str.Contains("smpRate="))
                             {
-                                output.WriteLine(row);
-
-                                // меняем appID 
-                                for (int i = 3; i < SVCBs[counter].Count; i++)
-                                {
-                                    row = SVCBs[counter][i];
-
-                                    // smpRate
-                                    if (row.Contains("smpRate="))
-                                    {
-                                        output.WriteLine("smpRate=" + smpRateValue);
-                                        Message.ExcellentMessage("Значения smpRate поменялись у " + file + " на " + smpRateValue);
-                                        continue;
-                                    }
-
-                                    output.WriteLine(row);
-                                }
+                                output.WriteLine("smpRate=" + smpRateValue);
+                                Message.ExcellentMessage("Значения smpRate поменялись у " + file + " на " + smpRateValue);
                             }
                             else
                             {
-                                output.WriteLine(row);
+                                output.WriteLine(str);
                             }
                         }
                     }
 
+                    // RCBs
                     foreach (var str in RCBs[counter])
                     {
                         output.WriteLine(str);
