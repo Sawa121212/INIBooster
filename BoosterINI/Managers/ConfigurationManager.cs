@@ -7,7 +7,11 @@ namespace BoosterINI.Managers
 {
     public class ConfigurationManager : Program
     {
-        public static void CreateLastConfig(string[] FilesList)
+        /// <summary>
+        /// Создать главный конфигурационный файл проекта
+        /// </summary>
+        /// <param name="FilesList"></param>
+        public static void CreateProjectConfig(string[] FilesList)
         {
             try
             {
@@ -192,21 +196,13 @@ namespace BoosterINI.Managers
                                         " prefix=" + prefix + "\"";
                                     output.WriteLine(goodRow);
                                     output.WriteLine("Comment" + dataNumber + "=");
-                                }
-                                else
-                                {
-                                    output.WriteLine(line);
+
+                                    continue;
                                 }
                             }
-                            else
-                            {
-                                output.WriteLine(line);
-                            }
                         }
-                        else
-                        {
-                            output.WriteLine(line);
-                        }
+
+                        output.WriteLine(line);
                     }
 
                     foreach (var str in GCBs[counter])

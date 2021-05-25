@@ -6,6 +6,10 @@ namespace BoosterINI.Managers
 {
     public class FileManager : Program
     {
+        /// <summary>
+        /// Проверяем стартовые файлы на наличие
+        /// </summary>
+        /// <returns></returns>
         public bool FileChecker()
         {
             try
@@ -67,52 +71,12 @@ namespace BoosterINI.Managers
                 else
                 {
                     Message.ErrorMessage("Количество файлов ini и cid не совпадают");
-                    return false;
                 }
             }
             catch (Exception)
             {
-                ErrorMessage = "Ошибка при чтении файлов";
+                ErrorMessage = "Ошибка при стартовых чтении файлов";
             }
-
-            // try
-            // {
-            //     Console.Write("Меняем smpRate у всех устройств? [ДА - y, НЕТ - любой символ]: ");
-            //     var userAnswer = Convert.ToString(Console.ReadLine());
-            //     if (userAnswer == "y")
-            //     {
-            //         smpRateEdit = true;
-            //         Console.Write("Новое значение smpRate = ");
-            //         smpRateValue = Convert.ToInt32(Console.ReadLine());
-            //     }
-            //     else
-            //     {
-            //         smpRateEdit = false;
-            //     }
-            //
-            //     Console.Write("\n");
-            // }
-            // catch (Exception e)
-            // {
-            //     Message.ErrorMessage("Ошибка при чтении вашего ответа");
-            //     Message.ErrorMessage(e.Message);
-            // }
-            //
-            // // создаем папки по имени файла
-            // if (_dir.CreateDirectory(Files))
-            // {
-            //     if (MoveFiles(Files))
-            //     {
-            //     }
-            //     else
-            //     {
-            //         return false;
-            //     }
-            // }
-            // else
-            // {
-            //     return false;
-            // }
 
             return true;
         }
@@ -122,37 +86,23 @@ namespace BoosterINI.Managers
         /// </summary>
         /// <param name="FilesList"></param>
         /// <returns></returns>
-        public bool CopyFiles(string[] FilesList)
+        public void CopyCidFiles(string[] FilesList)
         {
             try
             {
-                // перед перемещением создаем settings.ini
-                if (EditFiles(FilesList))
+                foreach (string file in FilesList)
                 {
-                    // перемещаем cid файлы 
-                    foreach (string file in FilesList)
-                    {
-                        var filename = file + ".cid";
-                        var dirName = file;
-                        File.Copy(filename, Environment.CurrentDirectory + "\\" + GlobalDirectoryName + "\\" + dirName + "\\" + filename);
-                    }
+                    var filename = file + ".cid";
+                    var dirName = file;
+                    File.Copy(filename, Environment.CurrentDirectory + "\\" + GlobalDirectoryName + "\\" + dirName + "\\" + filename);
+                }
 
-                    Message.ExcellentMessage("Файлы cid перемещены");
-                }
-                else
-                {
-                    Message.ErrorMessage("Ошибка при редактировании ini файлов (EditFiles)");
-                    return false;
-                }
+                Message.ExcellentMessage("Файлы cid скопируем");
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Message.ErrorMessage("Ошибка при перемещении файлов (MoveFiles)");
-                Message.ErrorMessage(e.Message.ToString());
-                return false;
+                ErrorMessage = "Ошибка при копировании cid файлов (CopyFiles)";
             }
-
-            return true;
         }
 
         /// <summary>
@@ -160,7 +110,7 @@ namespace BoosterINI.Managers
         /// </summary>
         /// <param name="FilesList"></param>
         /// <returns></returns>
-        public bool EditFiles(string[] FilesList)
+        public void CreateSettingsFiles(string[] FilesList)
         {
             try
             {
@@ -352,25 +302,13 @@ namespace BoosterINI.Managers
                     File.Move(tempFile, Environment.CurrentDirectory + "\\" + GlobalDirectoryName + "\\" + dirName + "\\" + "settings.ini");
                 }
 
-                // создаем Config файлы из ini файлов
-                if (Conf.CreateConfig(FilesList))
-                {
-                }
-                else
-                {
-                    return false;
-                }
-
                 Message.ExcellentMessage("Файлы ini созданы и переименованы в settings.ini");
             }
             catch (Exception e)
             {
                 Message.ErrorMessage("Ошибка при создании settings.ini файлов (EditFiles)");
                 Message.ErrorMessage(e.Message);
-                return false;
             }
-
-            return true;
         }
     }
 }
