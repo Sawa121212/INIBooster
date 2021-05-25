@@ -1,16 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
-namespace BoosterINI
+namespace BoosterINI.Managers
 {
-    public class Conf : Program
+    public class ConfigurationManager : Program
     {
         public static void CreateLastConfig(string[] FilesList)
         {
             try
             {
-                string filenameConf = "Project.conf";
+                string filenameConf = GlobalDirectoryName + "\\" + "Project.conf";
 
                 StreamWriter output = new StreamWriter(filenameConf);
 
@@ -36,10 +37,10 @@ namespace BoosterINI
         }
 
         /// <summary>
-        /// Создаем Config файлы из ini файлов
+        /// Создаем Сonfiguration файлы из ini файлов
         /// </summary>
         /// <param name="FilesList"></param>
-        public static bool CreateConfig(string[] FilesList)
+        public static void CreateConfigurationFiles(string[] FilesList)
         {
             string filenameConf = "configuration.conf";
             List<string> RCB = new List<string>();
@@ -48,13 +49,86 @@ namespace BoosterINI
 
             try
             {
+                var newGooseSubscribersList = new List<List<string>>();
+
                 int counter = 0;
                 foreach (string file in FilesList)
                 {
                     var dirName = file;
-                    StreamWriter output = new StreamWriter(dirName + "\\" + filenameConf);
+                    StreamWriter output = new StreamWriter(GlobalDirectoryName + "\\" + dirName + "\\" + filenameConf);
 
-                    output.WriteLine("[Count]\nvalue=0\n");
+                    newGooseSubscribersList.Add(new List<string>());
+
+                    int gooseSubscribersCount = 0;
+                    int internalIndex = 0;
+                    int internalIndexCount = 0;
+                    int skipLineCount = 0;
+
+                    foreach (var str in GooseSubscribers[counter])
+                    {
+                        if (skipLineCount > 0)
+                        {
+                            skipLineCount--;
+                            continue;
+                        }
+
+                        if (str.Contains("[GooseSubscriberCount]"))
+                        {
+                            skipLineCount++;
+                            continue;
+                        }
+
+                        if (str.Contains("[ExtIn"))
+                        {
+                            gooseSubscribersCount++;
+
+                            newGooseSubscribersList[counter].Add(str);
+                            continue;
+                        }
+
+                        if (str.Contains("GoCBRef="))
+                        {
+                            string[] rowParts = str.Split('=');
+                            if (rowParts.Length == 2)
+                            {
+                                if (rowParts[1] == String.Empty)
+                                {
+                                    // удалить последний элемент
+                                    for (int i = 0; i < 4; i++)
+                                    {
+                                        newGooseSubscribersList[counter].Remove(newGooseSubscribersList[counter].Last());
+                                    }
+
+                                    gooseSubscribersCount--;
+                                    break;
+                                }
+                            }
+
+                            newGooseSubscribersList[counter].Add(str);
+                            continue;
+                        }
+
+                        if (str.Contains("VlanID="))
+                        {
+                            string[] rowParts = str.Split('=');
+                            if (rowParts[1] != String.Empty)
+                            {
+                                newGooseSubscribersList[counter].Add("VlanID=" + (Convert.ToInt32(rowParts[1])));
+                            }
+
+                            continue;
+                        }
+
+                        newGooseSubscribersList[counter].Add(str);
+                    }
+
+                    // GooseSubscribers
+                    output.WriteLine("[Count]\nvalue=" + gooseSubscribersCount);
+                    foreach (var str in newGooseSubscribersList[counter])
+                    {
+                        output.WriteLine(str);
+                    }
+
                     int rowAddCount = 0;
                     bool addRowMode = false;
 
@@ -185,31 +259,9 @@ namespace BoosterINI
 
                 Message.ExcellentMessage("Config файлы созданы");
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Message.ErrorMessage("Ошибка при создании Config файлов (CreateConfig)");
-                Message.ErrorMessage(e.Message);
-                return false;
-            }
-
-            return true;
-        }
-
-        public static void ClearINIFiles(string[] FilesList)
-        {
-            try
-            {
-                foreach (string file in FilesList)
-                {
-                    File.Delete(file + ".ini");
-                }
-
-                Message.ExcellentMessage("Очистка временных файлов завершена");
-            }
-            catch (Exception e)
-            {
-                Message.ErrorMessage("Ошибка при удалении ini файлов (ClearINIFiles)");
-                Message.ErrorMessage(e.Message);
+                ErrorMessage = "Ошибка при создании Config файлов (CreateConfig)";
             }
         }
     }

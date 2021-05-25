@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace BoosterINI
+namespace BoosterINI.Managers
 {
-    public class Files : Program
+    public class FileManager : Program
     {
         public bool FileChecker()
         {
-            Dir _dir = new Dir();
             try
             {
                 CIDFiles = Directory.GetFiles(Environment.CurrentDirectory, "*.cid");
@@ -71,60 +70,59 @@ namespace BoosterINI
                     return false;
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Message.ErrorMessage("Ошибка при чтении файлов");
-                Message.ErrorMessage(e.Message);
+                ErrorMessage = "Ошибка при чтении файлов";
             }
 
-            try
-            {
-                Console.Write("Меняем smpRate у всех устройств? [ДА - y, НЕТ - любой символ]: ");
-                var userAnswer = Convert.ToString(Console.ReadLine());
-                if (userAnswer == "y")
-                {
-                    smpRateEdit = true;
-                    Console.Write("Новое значение smpRate = ");
-                    smpRateValue = Convert.ToInt32(Console.ReadLine());
-                }
-                else
-                {
-                    smpRateEdit = false;
-                }
-
-                Console.Write("\n");
-            }
-            catch (Exception e)
-            {
-                Message.ErrorMessage("Ошибка при чтении вашего ответа");
-                Message.ErrorMessage(e.Message);
-            }
-
-            // создаем папки по имени файла
-            if (_dir.CreateDirectory(Files))
-            {
-                if (MoveFiles(Files))
-                {
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                return false;
-            }
+            // try
+            // {
+            //     Console.Write("Меняем smpRate у всех устройств? [ДА - y, НЕТ - любой символ]: ");
+            //     var userAnswer = Convert.ToString(Console.ReadLine());
+            //     if (userAnswer == "y")
+            //     {
+            //         smpRateEdit = true;
+            //         Console.Write("Новое значение smpRate = ");
+            //         smpRateValue = Convert.ToInt32(Console.ReadLine());
+            //     }
+            //     else
+            //     {
+            //         smpRateEdit = false;
+            //     }
+            //
+            //     Console.Write("\n");
+            // }
+            // catch (Exception e)
+            // {
+            //     Message.ErrorMessage("Ошибка при чтении вашего ответа");
+            //     Message.ErrorMessage(e.Message);
+            // }
+            //
+            // // создаем папки по имени файла
+            // if (_dir.CreateDirectory(Files))
+            // {
+            //     if (MoveFiles(Files))
+            //     {
+            //     }
+            //     else
+            //     {
+            //         return false;
+            //     }
+            // }
+            // else
+            // {
+            //     return false;
+            // }
 
             return true;
         }
 
         /// <summary>
-        /// Перемещаем cid файлы
+        /// Копируем cid файлы
         /// </summary>
         /// <param name="FilesList"></param>
         /// <returns></returns>
-        public bool MoveFiles(string[] FilesList)
+        public bool CopyFiles(string[] FilesList)
         {
             try
             {
@@ -136,7 +134,7 @@ namespace BoosterINI
                     {
                         var filename = file + ".cid";
                         var dirName = file;
-                        File.Move(filename, Environment.CurrentDirectory + "\\" + dirName + "\\" + filename);
+                        File.Copy(filename, Environment.CurrentDirectory + "\\" + GlobalDirectoryName + "\\" + dirName + "\\" + filename);
                     }
 
                     Message.ExcellentMessage("Файлы cid перемещены");
@@ -351,7 +349,7 @@ namespace BoosterINI
                     counter++;
 
                     // перемещаем заполненный временный файл
-                    File.Move(tempFile, Environment.CurrentDirectory + "\\" + dirName + "\\" + "settings.ini");
+                    File.Move(tempFile, Environment.CurrentDirectory + "\\" + GlobalDirectoryName + "\\" + dirName + "\\" + "settings.ini");
                 }
 
                 // создаем Config файлы из ini файлов
