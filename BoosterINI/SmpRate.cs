@@ -16,13 +16,13 @@ namespace BoosterINI
                 if (userAnswer == "y")
                 {
                     // Запоминаем новое значение smpRate
-                    smpRateEdit = true;
+                    SmpRateEdit = true;
                     Console.Write("Новое значение smpRate = ");
-                    smpRateValue = Convert.ToInt32(Console.ReadLine());
+                    SmpRateValue = Convert.ToInt32(Console.ReadLine());
                 }
                 else
                 {
-                    smpRateEdit = false;
+                    SmpRateEdit = false;
                 }
 
                 Console.Write("\n");

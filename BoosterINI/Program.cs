@@ -12,13 +12,14 @@ namespace BoosterINI
         protected static string[] CIDFiles;
         protected static string[] Files;
 
-        protected static bool smpRateEdit;
-        protected static int smpRateValue;
+        protected static bool SmpRateEdit;
+        protected static int SmpRateValue;
 
         // // // 
         // Mod (режим записи)
         protected static List<List<string>> IEDName;
         protected static List<List<string>> Address;
+        protected static List<List<string>> Ethernet;
         protected static List<List<string>> ControlModels;
         protected static List<List<string>> Datasets;
         protected static List<List<string>> GCBs;
@@ -33,7 +34,7 @@ namespace BoosterINI
 
         static void Main(string[] args)
         {
-            Console.WriteLine("version 1.5r (InGOOSE)");
+            Console.WriteLine("version 1.6r (MAC, IP)");
 
             // Удаляем глобальную папку, если она уже есть
             string globalDirectory = GlobalDirectoryName;

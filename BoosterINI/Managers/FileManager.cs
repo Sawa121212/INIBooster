@@ -84,13 +84,13 @@ namespace BoosterINI.Managers
         /// <summary>
         /// Копируем cid файлы
         /// </summary>
-        /// <param name="FilesList"></param>
+        /// <param name="filesList"></param>
         /// <returns></returns>
-        public void CopyCidFiles(string[] FilesList)
+        public void CopyCidFiles(string[] filesList)
         {
             try
             {
-                foreach (string file in FilesList)
+                foreach (string file in filesList)
                 {
                     var filename = file + ".cid";
                     var dirName = file;
@@ -108,15 +108,16 @@ namespace BoosterINI.Managers
         /// <summary>
         /// Создаем settings.ini
         /// </summary>
-        /// <param name="FilesList"></param>
+        /// <param name="filesList"></param>
         /// <returns></returns>
-        public void CreateSettingsFiles(string[] FilesList)
+        public void CreateSettingsFiles(string[] filesList)
         {
             try
             {
                 //инициализация
                 IEDName = new List<List<string>>();
                 Address = new List<List<string>>();
+                Ethernet = new List<List<string>>();
                 ControlModels = new List<List<string>>();
                 Datasets = new List<List<string>>();
                 GCBs = new List<List<string>>();
@@ -125,10 +126,11 @@ namespace BoosterINI.Managers
                 GooseSubscribers = new List<List<string>>();
 
                 //добавление новой строки
-                foreach (var file in FilesList)
+                foreach (var file in filesList)
                 {
                     IEDName.Add(new List<string>());
                     Address.Add(new List<string>());
+                    Ethernet.Add(new List<string>());
                     ControlModels.Add(new List<string>());
                     Datasets.Add(new List<string>());
                     GCBs.Add(new List<string>());
@@ -137,11 +139,8 @@ namespace BoosterINI.Managers
                     GooseSubscribers.Add(new List<string>());
                 }
 
-                string[] addressSettings = {"", "", ""};
-                int addressSettingsCount = -1;
-
                 int counter = 0;
-                foreach (string file in FilesList)
+                foreach (string file in filesList)
                 {
                     // создаем временный файл, вставляем строки из ini файла
                     string tempFile = Path.GetTempFileName();
@@ -164,12 +163,20 @@ namespace BoosterINI.Managers
                                 IEDName[counter].Add(row.ReadLine());
                             }
 
+                            if (line == "[Address]")
+                            {
+                                Address[counter].Add(line);
+                                Address[counter].Add(row.ReadLine());
+                                Address[counter].Add(row.ReadLine());
+                                Address[counter].Add(row.ReadLine());
+                            }
+
                             if (line == "[Ethernet1]")
                             {
-                                Address[counter].Add("[Address]");
-                                Address[counter].Add(row.ReadLine());
-                                Address[counter].Add(row.ReadLine());
-                                Address[counter].Add(row.ReadLine());
+                                Ethernet[counter].Add(line);
+                                Ethernet[counter].Add(row.ReadLine());
+                                Ethernet[counter].Add(row.ReadLine());
+                                Ethernet[counter].Add(row.ReadLine());
                             }
 
                             if (line == "[ControlModels]")
@@ -210,7 +217,6 @@ namespace BoosterINI.Managers
                             if (line == "[GooseSubscriberCount]")
                             {
                                 GooseSubscribers[counter].Add(line);
-                                int i = 0;
                                 while ((line = row.ReadLine()) != "[SVCBcount]")
                                 {
                                     GooseSubscribers[counter].Add(line);
@@ -220,7 +226,6 @@ namespace BoosterINI.Managers
                             if (line == "[SVCBcount]")
                             {
                                 SVCBs[counter].Add(line);
-                                int i = 0;
                                 while ((line = row.ReadLine()) != null)
                                 {
                                     SVCBs[counter].Add(line);
@@ -246,11 +251,10 @@ namespace BoosterINI.Managers
 
                         sw.Write("\n");
 
-                        // Ethernet1
-                        sw.WriteLine("[Ethernet1]");
-                        for (int i = 1; i < Address[counter].Count; i++)
+                        // Ethernet
+                        foreach (var str in Ethernet[counter])
                         {
-                            sw.WriteLine(Address[counter][i]);
+                            sw.WriteLine(str);
                         }
 
                         sw.Write("\n");

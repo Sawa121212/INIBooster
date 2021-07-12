@@ -10,8 +10,8 @@ namespace BoosterINI.Managers
         /// <summary>
         /// Создать главный конфигурационный файл проекта
         /// </summary>
-        /// <param name="FilesList"></param>
-        public static void CreateProjectConfig(string[] FilesList)
+        /// <param name="filesList"></param>
+        public static void CreateProjectConfig(string[] filesList)
         {
             try
             {
@@ -22,13 +22,13 @@ namespace BoosterINI.Managers
                 output.WriteLine("[Project]\nName=Project\n");
 
                 int counter = 0;
-                foreach (string fileName in FilesList)
+                foreach (string fileName in filesList)
                 {
                     output.WriteLine("[Device" + counter++ + "]");
                     output.WriteLine("Name =" + fileName + "\n");
                 }
 
-                output.WriteLine("[Count]\nvalue=" + FilesList.Length);
+                output.WriteLine("[Count]\nvalue=" + filesList.Length);
 
                 output.Close();
                 Message.ExcellentMessage("Главный Config файл создан");
@@ -43,20 +43,17 @@ namespace BoosterINI.Managers
         /// <summary>
         /// Создаем Сonfiguration файлы из ini файлов
         /// </summary>
-        /// <param name="FilesList"></param>
-        public static void CreateConfigurationFiles(string[] FilesList)
+        /// <param name="filesList"></param>
+        public static void CreateConfigurationFiles(string[] filesList)
         {
             string filenameConf = "configuration.conf";
-            List<string> RCB = new List<string>();
-            bool RCBSaveMode = false;
-            bool DatasetSaveMode = false;
 
             try
             {
                 var newGooseSubscribersList = new List<List<string>>();
 
                 int counter = 0;
-                foreach (string file in FilesList)
+                foreach (string file in filesList)
                 {
                     var dirName = file;
                     StreamWriter output = new StreamWriter(GlobalDirectoryName + "\\" + dirName + "\\" + filenameConf);
@@ -64,8 +61,6 @@ namespace BoosterINI.Managers
                     newGooseSubscribersList.Add(new List<string>());
 
                     int gooseSubscribersCount = 0;
-                    int internalIndex = 0;
-                    int internalIndexCount = 0;
                     int skipLineCount = 0;
 
                     foreach (var str in GooseSubscribers[counter])
@@ -112,17 +107,6 @@ namespace BoosterINI.Managers
                             continue;
                         }
 
-                        if (str.Contains("VlanID="))
-                        {
-                            string[] rowParts = str.Split('=');
-                            if (rowParts[1] != String.Empty)
-                            {
-                                newGooseSubscribersList[counter].Add("VlanID=" + (Convert.ToInt32(rowParts[1])));
-                            }
-
-                            continue;
-                        }
-
                         newGooseSubscribersList[counter].Add(str);
                     }
 
@@ -133,11 +117,18 @@ namespace BoosterINI.Managers
                         output.WriteLine(str);
                     }
 
-                    int rowAddCount = 0;
-                    bool addRowMode = false;
+                    output.Write("\n");
 
                     // Address
                     foreach (var str in Address[counter])
+                    {
+                        output.WriteLine(str);
+                    }
+
+                    output.Write("\n");
+
+                    // Ethernet
+                    foreach (var str in Ethernet[counter])
                     {
                         output.WriteLine(str);
                     }
@@ -220,7 +211,7 @@ namespace BoosterINI.Managers
 
 
                     // SVCBs
-                    if (!smpRateEdit)
+                    if (!SmpRateEdit)
                     {
                         foreach (var str in SVCBs[counter])
                         {
@@ -233,8 +224,8 @@ namespace BoosterINI.Managers
                         {
                             if (str.Contains("smpRate="))
                             {
-                                output.WriteLine("smpRate=" + smpRateValue);
-                                Message.ExcellentMessage("Значения smpRate поменялись у " + file + " на " + smpRateValue);
+                                output.WriteLine("smpRate=" + SmpRateValue);
+                                Message.ExcellentMessage("Значения smpRate поменялись у " + file + " на " + SmpRateValue);
                             }
                             else
                             {
